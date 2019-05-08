@@ -18,10 +18,10 @@ This project will help the Node.js Competitive programmers
 
 ## Commands :
 - `npm run clean` - Remove `lib/` directory
-- `npm test` - Run tests with linting and coverage results.
-- `npm test:only` - Run tests without linting or coverage.
-- `npm test:watch` - You can even re-run tests on file changes!
-- `npm test:prod` - Run tests with minified code.
+- `npm run test` - Run tests with linting and coverage results.
+- `npm run test:only` - Run tests without linting or coverage.
+- `npm run test:watch` - You can even re-run tests on file changes!
+- `npm run test:prod` - Run tests with minified code.
 - `npm run test:examples` - Test written examples on pure JS for better understanding module usage.
 - `npm run lint` - Run ESlint with airbnb-config
 - `npm run cover` - Get coverage report for your code.
