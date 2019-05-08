@@ -1,10 +1,65 @@
-const defaultAwesomeFunction = (name) => {
-  const returnStr = `I am the Default Awesome Function, fellow comrade! - ${name}`;
-  return returnStr;
-};
+const waitConsoleInput = require('wait-console-input');
 
-const awesomeFunction = () => 'I am just an Awesome Function';
+function inputReader() {
+	/**
+	* Function use: Get a character from user
+	*/
+	function readChar() {
+		return waitConsoleInput.readChar();
+	}
 
-export default defaultAwesomeFunction;
+	/**
+	* Function use: Get an integer number from user
+	*/
+	function readInteger() {
+		return waitConsoleInput.readInteger();
+	}
 
-export { awesomeFunction };
+	/**
+	* Function use: Get a floating point number from user
+	*/
+	function readFloat() {
+		return waitConsoleInput.readFloat();
+	}
+
+	/**
+	* Function use: Get a string from user
+	*
+	*/
+	function readLine() {
+		return waitConsoleInput.readLine();
+	}
+
+	/**
+	* Function use: Get a number array
+	*/
+	function readNumberArray() {
+		return waitConsoleInput.readNumberArray();
+	}
+
+	/**
+	* Function use: Get an generic array.
+	*/
+	function readArray() {
+		return waitConsoleInput.readArray();
+	}
+
+	/**
+	* Function use: Get the true or false value entered by user on the console.
+	*/
+	function readBoolean() {
+		return waitConsoleInput.readBoolean();
+	}
+
+	return {
+		readArray,
+		readBoolean,
+		readChar,
+		readFloat,
+		readInteger,
+		readLine,
+		readNumberArray
+	};
+}
+
+exports.inputReader = inputReader();

@@ -5,6 +5,8 @@
     "mocha": true
   },
   "rules": {
-    "comma-dangle": ["error", "only-multiline"]
+    "comma-dangle": ["error", "only-multiline"],
+    "indent": ["error", "tab"],
+    "no-tabs": 0
   }
 }

@@ -53,5 +53,8 @@
     "mocha": "^6.1.3",
     "nyc": "^13.3.0",
     "rimraf": "^2.6.2"
+  },
+  "dependencies": {
+    "wait-console-input": "^0.1.4"
   }
 }
