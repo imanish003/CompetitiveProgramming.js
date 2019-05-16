@@ -17,6 +17,13 @@ const argv = require('yargs')
 
 startConvertion(argv.source, argv.destination);
 
+/**
+ * Start the conversion of source file and store it at the destination
+ * Output file content could be submitted on any conding contest platform
+ *
+ * @param {*} source path
+ * @param {*} destination path
+ */
 function startConvertion(source,destination){
 
     var code = fs.readFileSync(source, 'utf-8');
@@ -40,6 +47,13 @@ function startConvertion(source,destination){
     });
 }
 
+/**
+ * Process the single line of code written by user.
+ *
+ * @param {*} line
+ * @param {*} nameOfInputReaderVariable
+ * @returns
+ */
 function processLine(line,nameOfInputReaderVariable){
 	/**
 	 * Remove the require statment to include Competative programming input reader
@@ -51,6 +65,13 @@ function processLine(line,nameOfInputReaderVariable){
 	}
 }
 
+/**
+ * Find the name of variable in which user store the inputReader object.
+ * Which is used by user to read different types of input from the console.
+ *
+ * @param {*} Array of lines in code
+ * @returns name of input reader variable
+ */
 function findInputReaderVariableName(lines){
 	for(let line of lines){
 		/**
@@ -84,6 +105,12 @@ function findInputReaderVariableName(lines){
 }
 
 
+/**
+ * Get prefix for the converted code
+ *
+ * @param {*} input reader variable used by user
+ * @returns prefix string
+ */
 function getPrefixString(nameOfInputReaderVariable){
 	var prefixString = `
 let _inputLines;
@@ -97,6 +124,13 @@ function _main() {\n\t
 	return prefixString;
 }
 
+/**
+ * Get prefix for the converted code
+ *
+ * @param {*} code written by user
+ * @param {*} nameOfInputReaderVariable
+ * @returns postfix string
+ */
 function getPostfixString(code, nameOfInputReaderVariable){
 	var postfixString = `
 }
