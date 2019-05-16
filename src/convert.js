@@ -19,19 +19,20 @@ startConvertion(argv.source, argv.destination);
 
 function startConvertion(source,destination){
 
-    var data = fs.readFileSync(source, 'utf-8');
-    var lines = data.split('\n');
+    var code = fs.readFileSync(source, 'utf-8');
+    var lines = code.split('\n');
 
     // Find the variable name in which inputReader is stored
-    let nameOfInputReaderVariable = findInputReaderVariableName(lines);
+	let nameOfInputReaderVariable = findInputReaderVariableName(lines);
+	console.log('nameOfInputReaderVariable :', nameOfInputReaderVariable);
 
     // Read the file line by line
-    var finalOutput = prefixString;
+    var finalOutput = getPrefixString(nameOfInputReaderVariable);
     for(let line of lines){
        let modifiedLine = processLine(line,nameOfInputReaderVariable);
-       finalOutput += "\t" +modifiedLine +"\n";
+       if(modifiedLine) finalOutput += "\t" +modifiedLine +"\n";
     }
-    finalOutput += postfixString;
+    finalOutput += getPostfixString(code,nameOfInputReaderVariable);
 
     console.log(finalOutput);
     fs.writeFile(destination, finalOutput, function(err) {
@@ -40,96 +41,172 @@ function startConvertion(source,destination){
 }
 
 function processLine(line,nameOfInputReaderVariable){
-    if(line.includes(nameOfInputReaderVariable+'.readNumber()')){
-        return line.replace(nameOfInputReaderVariable+'.readNumber()','Number(lines[lineNumber++])');
-    }
-    else if(line.includes(nameOfInputReaderVariable+'.readLine()')){
-        return line.replace(nameOfInputReaderVariable+'.readLine()','lines[lineNumber++]');
-    }
-    else if(line.includes(nameOfInputReaderVariable+'.readArray()')){
-        return line.replace(nameOfInputReaderVariable+'.readArray()','lines[lineNumber++].split(" ")');
-    }
-    else if(line.includes(nameOfInputReaderVariable+'.readBoolean()')){
-        return line.replace(nameOfInputReaderVariable+'.readBoolean()','Boolean(lines[lineNumber++])');
-    }
-    else if(line.includes(nameOfInputReaderVariable+'.readNumericArray()')){
-        return line.replace(nameOfInputReaderVariable+'.readNumericArray()','lines[lineNumber++].split(" ").map(val => Number(val))');
-    }else if(line.includes("requires('inputReader')")){
-        return "";
-    }else {
-        return line;
-    }
+	/**
+	 * Remove the require statment to include Competative programming input reader
+	 */
+	if(!(line.includes('require') && line.includes(nameOfInputReaderVariable))){
+		return line;
+	}else{
+		return "";
+	}
 }
 
 function findInputReaderVariableName(lines){
-    for(let line of lines){
-        console.log(line);
-        if(line.includes("requires('inputReader')")) {
-            return line.match(/\s.+\s*=/)[0].trim().split(/[ =]/)[0];
-        }
+	for(let line of lines){
+		/**
+		 * Regex test for following type of require statement :
+		 * const { inputReader } = require('../lib/index');
+		 * && exclude single or multiline comments
+		 */
+		if(/^.*{.+}.*=.*require.*\(.*['"].*.\.\/lib\/index.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
+			/**
+			 * Below statement output :
+			 * [ 'const ', ' inputReader ', ' =' ]
+			 */
+			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].split(/[[ ]*{[ ]*}[ ]*]/);
+			console.log('stringsBeforeEqualSign :', stringsBeforeEqualSign);
+			
+			return stringsBeforeEqualSign[1];
+		}
+		/**
+		 * const inputReader = require('../lib/index').inputReader;
+		 */
+		else if(/^.*=.*require.*\(.*['"].*.\.\/lib\/index.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)){
+			/**
+			 * Below statement output :
+			 * [ 'const', 'inputReader', '=' ]
+			 */
+			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].split(/[ ]+/);
+			
+			return stringsBeforeEqualSign[1];
+		}
     }
 }
 
 
-var prefixString = `
-let __lines__;
-let __lineNumber__ = 0;
+function getPrefixString(nameOfInputReaderVariable){
+	var prefixString = `
+let _inputLines;
+let _lineNumber = 0;
+let ${nameOfInputReaderVariable} = _inputReader ();
 
-function main() {\n\t
-	let __lines__ = __input__.split('\n');`
+function _main() {\n\t
+	_inputLines = _inputData.split('\\n');
+`
+	
+	return prefixString;
+}
 
-var postfixString = `}\n\nvar input = '';
+function getPostfixString(code, nameOfInputReaderVariable){
+	var postfixString = `
+}
+
+var _inputData = '';
 function cacheInput(data) {
-    input += data;
+	_inputData += data;
 }
 
 process.stdin.resume();
 process.stdin.setEncoding('utf8');
-process.stdin.on('data', cacheInput).on('end', main);
+process.stdin.on('data', cacheInput).on('end', _main);
 
-function __inputReader__ () {
+function _inputReader () {`
+
+	let returnStatement = `
+	return {`
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readArray()`)){
+		postfixString += `
 	function readArray() {
-		return __lines__[__lineNumber__++].split(' ');
+		return _inputLines[_lineNumber++].split(' ');
 	}
-
-	function readNumberArray(){
-		return __lines__[__lineNumber__++].split(' ').map(val => Number(val));
+		`;
+		returnStatement += `
+		readArray,`;
 	}
-
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readBoolean()`)){
+		postfixString += `
 	function readBoolean(){
-		let word = __lines__[__lineNumber__++];
+		let word = _inputLines[_lineNumber++];
 		if(word.toLowerCase() == "true" || word.toLowerCase() == "1"){
 			return true;
 		}else {
 			return true;
 		}
 	}
-
+		`;
+		returnStatement += `
+		readBoolean,`;
+	}
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readChar()`)){
+		postfixString += `
 	function readChar(){
-		return __lines__[__lineNumber__++].trim();
+		return _inputLines[_lineNumber++].trim();
 	}
-
+		`;
+		returnStatement += `
+		readChar,`;
+	}
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readFloat()`)){
+		postfixString += `
 	function readFloat(){
-		return Number(__lines__[__lineNumber__++]);
+		return Number(_inputLines[_lineNumber++]);
 	}
-
+		`;
+		returnStatement += `
+		readFloat,`;
+	}
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readInteger()`)){
+		postfixString += `
 	function readInteger(){
-		return Number(__lines__[__lineNumber__++]);
+		return Number(_inputLines[_lineNumber++]);
 	}
-
+		`;
+		returnStatement += `
+		readInteger,`;
+	}
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readLine()`)){
+		postfixString += `
 	function readLine(){
-		return __lines__[__lineNumber__++];
+		return _inputLines[_lineNumber++];
+	}
+		`;
+		returnStatement += `
+		readLine,`;
+	}
+	
+	if(code.includes(`${nameOfInputReaderVariable}.readNumberArray()`)){
+		postfixString += `
+	function readNumberArray(){
+		return _inputLines[_lineNumber++].split(' ').map(val => Number(val));
+	}
+		`;
+		returnStatement += `
+		readNumberArray,`;
 	}
 
-	return {
-		readArray,
-		readBoolean,
-		readChar,
-		readFloat,
-		readInteger,
-		readLine,
-		readNumberArray
-	}
-}`
+	returnStatement += `
+	}`;
+	postfixString += `
+	${returnStatement}
+}`;
+
+	return postfixString;
+}
 
 
+`
+
+
+
+
+
+
+
+
+`
