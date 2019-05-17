@@ -1,6 +1,6 @@
 {
 	"name": "competitive-programming-js",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Boilerplate for npm modules with ES6 features and syntax",
 	"main": "./lib/index.js",
 	"bin": {
