@@ -41,7 +41,8 @@ function startConvertion(source,destination){
     finalOutput += getPostfixString(code,nameOfInputReaderVariable);
 
     fs.writeFile(destination, finalOutput, function(err) {
-        console.log('Error',err);
+		if (err) throw err;
+		console.log('Hurray!!!! Output file generated successfully');
 	});
 }
 
@@ -82,9 +83,8 @@ function findInputReaderVariableName(lines){
 			 * Below statement output :
 			 * [ 'const ', ' inputReader ', ' =' ]
 			 */
-			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].split(/[[ ]*{[ ]*}[ ]*]/);
-			
-			return stringsBeforeEqualSign[1];
+			let stringsBeforeEqualSign = line.match(/{.*}/g)[0].replace(/([ ]*{[ ]*)|([ ]*}[ ]*)/g,"");
+			return stringsBeforeEqualSign;
 		}
 		/**
 		 * const inputReader = require('competitive-programming-js').inputReader;
@@ -94,9 +94,8 @@ function findInputReaderVariableName(lines){
 			 * Below statement output :
 			 * [ 'const', 'inputReader', '=' ]
 			 */
-			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].split(/[ ]+/);
-			
-			return stringsBeforeEqualSign[1];
+			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].replace(/[ ]*=/,"").split(" ");
+			return stringsBeforeEqualSign[stringsBeforeEqualSign.length-1];
 		}
     }
 }
