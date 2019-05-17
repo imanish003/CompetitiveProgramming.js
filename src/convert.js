@@ -1,19 +1,18 @@
 #!/usr/bin/env node
-/* eslint-disable */
-var fs = require('fs');
+/* eslint-disable no-use-before-define */
+const fs = require('fs');
 
-const argv = require('yargs')
+const { argv } = require('yargs')
 	.option('source', {
 		alias: 's',
 		describe: 'Source file path'
 	})
 	.option('destination', {
-		alias: ['dest','d'],
+		alias: ['dest', 'd'],
 		describe: 'Path: where you want to store the output'
 	})
 	.demandOption(['source'], 'Source file path is required')
-	.help()
-	.argv;
+	.help();
 
 startConvertion(argv.source, argv.destination);
 
@@ -24,23 +23,24 @@ startConvertion(argv.source, argv.destination);
  * @param {*} source path
  * @param {*} destination path
  */
-function startConvertion(source,destination){
+function startConvertion(source, destination) {
+	const code = fs.readFileSync(source, 'utf-8');
+	const lines = code.split('\n');
 
-    var code = fs.readFileSync(source, 'utf-8');
-    var lines = code.split('\n');
+	// Find the variable name in which inputReader is stored
+	const nameOfInputReaderVariable = findInputReaderVariableName(lines);
 
-    // Find the variable name in which inputReader is stored
-	let nameOfInputReaderVariable = findInputReaderVariableName(lines);
+	// Read the file line by line
+	let finalOutput = getPrefixString(nameOfInputReaderVariable);
 
-    // Read the file line by line
-    var finalOutput = getPrefixString(nameOfInputReaderVariable);
-    for(let line of lines){
-       let modifiedLine = processLine(line,nameOfInputReaderVariable);
-       if(modifiedLine) finalOutput += "\t" +modifiedLine +"\n";
-    }
-    finalOutput += getPostfixString(code,nameOfInputReaderVariable);
+	// eslint-disable-next-line no-restricted-syntax
+	for (const line of lines) {
+		const modifiedLine = processLine(line, nameOfInputReaderVariable);
+		if (modifiedLine) finalOutput += `\t${modifiedLine}\n`;
+	}
+	finalOutput += getPostfixString(code, nameOfInputReaderVariable);
 
-    fs.writeFile(destination, finalOutput, function(err) {
+	fs.writeFile(destination, finalOutput, (err) => {
 		if (err) throw err;
 		console.log('Hurray!!!! Output file generated successfully');
 	});
@@ -53,15 +53,14 @@ function startConvertion(source,destination){
  * @param {*} nameOfInputReaderVariable
  * @returns
  */
-function processLine(line,nameOfInputReaderVariable){
+function processLine(line, nameOfInputReaderVariable) {
 	/**
 	 * Remove the require statment to include Competative programming input reader
 	 */
-	if(!(line.includes('require') && line.includes(nameOfInputReaderVariable))){
+	if (!(line.includes('require') && line.includes(nameOfInputReaderVariable))) {
 		return line;
-	}else{
-		return "";
 	}
+	return '';
 }
 
 /**
@@ -71,33 +70,35 @@ function processLine(line,nameOfInputReaderVariable){
  * @param {*} Array of lines in code
  * @returns name of input reader variable
  */
-function findInputReaderVariableName(lines){
-	for(let line of lines){
+function findInputReaderVariableName(lines) {
+	// eslint-disable-next-line no-restricted-syntax
+	for (const line of lines) {
 		/**
 		 * Regex test for following type of require statement :
 		 * const { inputReader } = require('competitive-programming-js');
 		 * && exclude single or multiline comments
 		 */
-		if(/^.*{.+}.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
+		if (/^.*{.+}.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
 			/**
 			 * Below statement output :
 			 * [ 'const ', ' inputReader ', ' =' ]
 			 */
-			let stringsBeforeEqualSign = line.match(/{.*}/g)[0].replace(/([ ]*{[ ]*)|([ ]*}[ ]*)/g,"");
+			const stringsBeforeEqualSign = line.match(/{.*}/g)[0].replace(/([ ]*{[ ]*)|([ ]*}[ ]*)/g, '');
 			return stringsBeforeEqualSign;
 		}
 		/**
 		 * const inputReader = require('competitive-programming-js').inputReader;
 		 */
-		else if(/^.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)){
+		if (/^.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)) {
 			/**
 			 * Below statement output :
 			 * [ 'const', 'inputReader', '=' ]
 			 */
-			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].replace(/[ ]*=/,"").split(" ");
-			return stringsBeforeEqualSign[stringsBeforeEqualSign.length-1];
+			const stringsBeforeEqualSign = line.match(/^.*=/g)[0].replace(/[ ]*=/, '').split(' ');
+			return stringsBeforeEqualSign[stringsBeforeEqualSign.length - 1];
 		}
-    }
+	}
+	return null;
 }
 
 
@@ -107,16 +108,16 @@ function findInputReaderVariableName(lines){
  * @param {*} input reader variable used by user
  * @returns prefix string
  */
-function getPrefixString(nameOfInputReaderVariable){
-	var prefixString = `
+function getPrefixString(nameOfInputReaderVariable) {
+	const prefixString = `
 let _inputLines;
 let _lineNumber = 0;
 let ${nameOfInputReaderVariable} = _inputReader ();
 
 function _main() {\n\t
 	_inputLines = _inputData.split('\\n');
-`
-	
+`;
+
 	return prefixString;
 }
 
@@ -127,8 +128,8 @@ function _main() {\n\t
  * @param {*} nameOfInputReaderVariable
  * @returns postfix string
  */
-function getPostfixString(code, nameOfInputReaderVariable){
-	var postfixString = `
+function getPostfixString(code, nameOfInputReaderVariable) {
+	let postfixString = `
 }
 
 var _inputData = '';
@@ -140,12 +141,12 @@ process.stdin.resume();
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', cacheInput).on('end', _main);
 
-function _inputReader () {`
+function _inputReader () {`;
 
 	let returnStatement = `
-	return {`
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readArray()`)){
+	return {`;
+
+	if (code.includes(`${nameOfInputReaderVariable}.readArray()`)) {
 		postfixString += `
 	function readArray() {
 		return _inputLines[_lineNumber++].split(' ');
@@ -154,8 +155,8 @@ function _inputReader () {`
 		returnStatement += `
 		readArray,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readBoolean()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readBoolean()`)) {
 		postfixString += `
 	function readBoolean(){
 		let word = _inputLines[_lineNumber++];
@@ -169,8 +170,8 @@ function _inputReader () {`
 		returnStatement += `
 		readBoolean,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readChar()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readChar()`)) {
 		postfixString += `
 	function readChar(){
 		return _inputLines[_lineNumber++].trim();
@@ -179,8 +180,8 @@ function _inputReader () {`
 		returnStatement += `
 		readChar,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readFloat()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readFloat()`)) {
 		postfixString += `
 	function readFloat(){
 		return Number(_inputLines[_lineNumber++]);
@@ -189,8 +190,8 @@ function _inputReader () {`
 		returnStatement += `
 		readFloat,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readInteger()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readInteger()`)) {
 		postfixString += `
 	function readInteger(){
 		return Number(_inputLines[_lineNumber++]);
@@ -199,8 +200,8 @@ function _inputReader () {`
 		returnStatement += `
 		readInteger,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readLine()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readLine()`)) {
 		postfixString += `
 	function readLine(){
 		return _inputLines[_lineNumber++];
@@ -209,8 +210,8 @@ function _inputReader () {`
 		returnStatement += `
 		readLine,`;
 	}
-	
-	if(code.includes(`${nameOfInputReaderVariable}.readNumberArray()`)){
+
+	if (code.includes(`${nameOfInputReaderVariable}.readNumberArray()`)) {
 		postfixString += `
 	function readNumberArray(){
 		return _inputLines[_lineNumber++].split(' ').map(val => Number(val));
@@ -228,15 +229,3 @@ function _inputReader () {`
 
 	return postfixString;
 }
-
-
-`
-
-
-
-
-
-
-
-
-`
