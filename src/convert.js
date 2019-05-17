@@ -57,7 +57,9 @@ function processLine(line, nameOfInputReaderVariable) {
 	/**
 	 * Remove the require statment to include Competative programming input reader
 	 */
-	if (!(line.includes('require') && line.includes(nameOfInputReaderVariable))) {
+	let splitArray = line.split(/[ ()']/g);
+	if (!(splitArray.includes('competitive-programming-js') && splitArray.includes('require'))) {
+		console.log('line :', line);
 		return line;
 	}
 	return '';
