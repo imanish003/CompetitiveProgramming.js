@@ -31,7 +31,6 @@ function startConvertion(source,destination){
 
     // Find the variable name in which inputReader is stored
 	let nameOfInputReaderVariable = findInputReaderVariableName(lines);
-	console.log('nameOfInputReaderVariable :', nameOfInputReaderVariable);
 
     // Read the file line by line
     var finalOutput = getPrefixString(nameOfInputReaderVariable);
@@ -41,10 +40,9 @@ function startConvertion(source,destination){
     }
     finalOutput += getPostfixString(code,nameOfInputReaderVariable);
 
-    console.log(finalOutput);
     fs.writeFile(destination, finalOutput, function(err) {
         console.log('Error',err);
-    });
+	});
 }
 
 /**
@@ -76,23 +74,22 @@ function findInputReaderVariableName(lines){
 	for(let line of lines){
 		/**
 		 * Regex test for following type of require statement :
-		 * const { inputReader } = require('../lib/index');
+		 * const { inputReader } = require('competitive-programming-js');
 		 * && exclude single or multiline comments
 		 */
-		if(/^.*{.+}.*=.*require.*\(.*['"].*.\.\/lib\/index.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
+		if(/^.*{.+}.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
 			/**
 			 * Below statement output :
 			 * [ 'const ', ' inputReader ', ' =' ]
 			 */
 			let stringsBeforeEqualSign = line.match(/^.*=/g)[0].split(/[[ ]*{[ ]*}[ ]*]/);
-			console.log('stringsBeforeEqualSign :', stringsBeforeEqualSign);
 			
 			return stringsBeforeEqualSign[1];
 		}
 		/**
-		 * const inputReader = require('../lib/index').inputReader;
+		 * const inputReader = require('competitive-programming-js').inputReader;
 		 */
-		else if(/^.*=.*require.*\(.*['"].*.\.\/lib\/index.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)){
+		else if(/^.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)){
 			/**
 			 * Below statement output :
 			 * [ 'const', 'inputReader', '=' ]
