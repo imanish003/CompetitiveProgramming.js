@@ -53,13 +53,12 @@ function startConvertion(source, destination) {
  * @param {*} nameOfInputReaderVariable
  * @returns
  */
-function processLine(line, nameOfInputReaderVariable) {
+function processLine(line) {
 	/**
 	 * Remove the require statment to include Competative programming input reader
 	 */
-	let splitArray = line.split(/[ ()']/g);
+	const splitArray = line.split(/[ ()']/g);
 	if (!(splitArray.includes('competitive-programming-js') && splitArray.includes('require'))) {
-		console.log('line :', line);
 		return line;
 	}
 	return '';
@@ -74,7 +73,8 @@ function processLine(line, nameOfInputReaderVariable) {
  */
 function findInputReaderVariableName(lines) {
 	// eslint-disable-next-line no-restricted-syntax
-	for (const line of lines) {
+	for (let line of lines) {
+		line = line.trim();
 		/**
 		 * Regex test for following type of require statement :
 		 * const { inputReader } = require('competitive-programming-js');
