@@ -1,7 +1,7 @@
 {
 	"name": "competitive-programming-js",
-	"version": "1.0.5",
-	"description": "Boilerplate for npm modules with ES6 features and syntax",
+	"version": "1.0.6",
+	"description": "No more boilerplate code to participate in Competitive Programming contests in Node.js",
 	"main": "./lib/index.js",
 	"bin": {
 		"cp-convert": "./lib/convert.js"
