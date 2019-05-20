@@ -1,6 +1,6 @@
 {
 	"name": "competitive-programming-js",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "No more boilerplate code to participate in Competitive Programming contests in Node.js",
 	"main": "./lib/index.js",
 	"bin": {
