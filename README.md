@@ -12,8 +12,21 @@
 * Finally, convert the code, which you can submit on websites like codechef, topcoder, hackerrank, hackerearth etc.
 
 ## Installation
+1. First, install the package globally :
+	```
 	npm install -g competitive-programming-js
-**Note:** Install the package globally otherwise you won't be able to use **cp-convert** command
+	```
+	**Why?** Global package will let you use **cp-convert** command
+2. Now install it locally in the project :
+	* Initialize the project (If it's not already NPM project)
+		```
+		npm init -y
+		```
+	* Installing the package
+		```
+		npm install --save competitive-programming-js
+		```
+	**Why?** Local package will let you use **inputReader** module which wait for user input.
 
 ## Basic Use
 
@@ -74,6 +87,15 @@
 > All of these functions will wait for user input
 1. readInteger()
 	* Get an integer number from the user
+	* This can't read the numbers separated by space
+	* **Special Case** To read numbers separated by space, you can use following trick:
+		```
+		// Input = 1 2 3
+		let [a,b,c] = inputReader.readNumberArray()
+		// After above statement a is 1, b is 2 and c is 3
+		```
+		**Note** Above code is just using array destructuring
+
 2. readFloat()
 	* Get a floating point number from the user
 3. readBoolean()
