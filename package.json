@@ -1,7 +1,7 @@
 {
 	"name": "competitive-programming-js",
-	"version": "1.0.8",
-	"description": "No more boilerplate code to participate in Competitive Programming contests in Node.js",
+	"version": "1.0.9",
+	"description": "No more boilerplate code to participate in Competitive Programming contests in Javascript/Node.js",
 	"main": "./lib/index.js",
 	"bin": {
 		"cp-convert": "./lib/convert.js"

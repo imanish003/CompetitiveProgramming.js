@@ -1,12 +1,12 @@
 # Competitive-Programming-JS
-**NPM package for Node.js competitive programmers** ✨
+**NPM package for Javascript/Node.js competitive programmers** ✨
 
 [![Build Status](https://travis-ci.org/Gr8manish/CompetitiveProgramming.js.svg?branch=master)](https://travis-ci.org/Gr8manish/CompetitiveProgramming.js) [![dependencies Status](https://david-dm.org/Gr8manish/CompetitiveProgramming.js/status.svg)](https://david-dm.org/Gr8manish/CompetitiveProgramming.js) [![devDependencies Status](https://david-dm.org/Gr8manish/CompetitiveProgramming.js/dev-status.svg)](https://david-dm.org/Gr8manish/CompetitiveProgramming.js?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
 
 ## Goal 🎯
-* Help Node.js competitive programmers:
+* To help Javascript/Node.js competitive programmers:
 	* To start writing code without any boilerplate code
 	* To debug the code easily by providing input through terminal one by one and check output instantly
 
