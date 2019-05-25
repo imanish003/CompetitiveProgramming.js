@@ -11,18 +11,10 @@ function inputReader() {
 	}
 
 	/**
-	* Read integer from console
-	* @returns integer
+	* Read Number from console
+	* @returns a Number
 	*/
-	function readInteger() {
-		return waitConsoleInput.readInteger();
-	}
-
-	/**
-	* Read float number from console
-	* @returns float
-	*/
-	function readFloat() {
+	function readNumber() {
 		return waitConsoleInput.readFloat();
 	}
 
@@ -62,8 +54,7 @@ function inputReader() {
 		readArray,
 		readBoolean,
 		readChar,
-		readFloat,
-		readInteger,
+		readNumber,
 		readLine,
 		readNumberArray
 	};

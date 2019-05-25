@@ -183,24 +183,14 @@ function _inputReader () {`;
 		readChar,`;
 	}
 
-	if (code.includes(`${nameOfInputReaderVariable}.readFloat()`)) {
+	if (code.includes(`${nameOfInputReaderVariable}.readNumber()`)) {
 		postfixString += `
-	function readFloat(){
+	function readNumber(){
 		return Number(_inputLines[_lineNumber++]);
 	}
 		`;
 		returnStatement += `
-		readFloat,`;
-	}
-
-	if (code.includes(`${nameOfInputReaderVariable}.readInteger()`)) {
-		postfixString += `
-	function readInteger(){
-		return Number(_inputLines[_lineNumber++]);
-	}
-		`;
-		returnStatement += `
-		readInteger,`;
+		readNumber,`;
 	}
 
 	if (code.includes(`${nameOfInputReaderVariable}.readLine()`)) {
