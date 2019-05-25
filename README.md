@@ -1,15 +1,20 @@
 # Competitive-Programming-JS
-**No more boilerplate code to participate in Competitive Programming contests in Node.js * ✨**
+**To help Node.js competitive programmers** ✨
 
 [![Build Status](https://travis-ci.org/Gr8manish/CompetitiveProgramming.js.svg?branch=master)](https://travis-ci.org/Gr8manish/CompetitiveProgramming.js) [![dependencies Status](https://david-dm.org/Gr8manish/CompetitiveProgramming.js/status.svg)](https://david-dm.org/Gr8manish/CompetitiveProgramming.js) [![devDependencies Status](https://david-dm.org/Gr8manish/CompetitiveProgramming.js/dev-status.svg)](https://david-dm.org/Gr8manish/CompetitiveProgramming.js?type=dev) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 
 
 ## Goal 🎯
-* This project will help the Node.js Competitive programmers
-* Make it easy to debug the code locally
-* Provide a utility to wait for user input
-* Finally, convert the code, which you can submit on websites like codechef, topcoder, hackerrank, hackerearth etc.
+* Help Node.js competitive programmers:
+	* To start writing code without any boilerplate code
+	* To debug the code easily by providing input through terminal one by one and check output instantly
+
+## How does it help? 🎯
+1. Write the code which use **inputReader** utility provided by this npm package.
+	* this package helps in reading input from terminal one by one. 
+	* For example **inputReader.readNumber()** will wait for user input and return provided input.
+2. Now simple global command is provided by this package which convert the code, written using **inputReader**, into the code which is submittable on websites like codechef, topcoder, hackerrank, hackerearth etc.
 
 ## Installation
 1. First, install the package globally :
@@ -34,8 +39,8 @@
 	```javascript
 	const {inputReader} = require('competitive-programming-js');
 
-	// To read integer value from console
-	let noOfTestCases = inputReader.readInteger();
+	// To read Number from console
+	let noOfTestCases = inputReader.readNumber();
 	console.log(noOfCase,typeof noOfCase);
 	while(noOfTestCases--){
 		// To read generic array separated by space
@@ -50,10 +55,6 @@
 		tmp = inputReader.readChar();
 		console.log(tmp, typeof tmp);
 
-		// to read float value
-		tmp = inputReader.readFloat();
-		console.log(tmp, typeof tmp);
-
 		// to read a line
 		tmp = inputReader.readLine();
 		console.log(tmp, typeof tmp);
@@ -66,6 +67,7 @@
 
 2. Now to convert the file into code which could be submitted on competitive programming websites, run following command:
 	* **cp-convert --source example.js --destination output.js**
+		
 		OR
 	* **cp-convert -s example.js -d output.js**
 3. Hurray, that's all. Now you can submit the code which is there in output.js file on any competitive programming website. To learn more in details keep reading :)
@@ -73,7 +75,7 @@
 ## Usage
 
 #### 1. inputReader
-##### Ways to import inputReader variable
+##### Ways to import inputReader module
 1. ```javascript 
 	const {inputReader} = require('competitive-programming-js'); 
 	```
@@ -85,30 +87,27 @@
 
 ##### Available functions
 > All of these functions will wait for user input
-1. readInteger()
-	* Get an integer number from the user
+1. readNumber()
+	* Get a Number from the user
 	* This can't read the numbers separated by space
 	* **Special Case** To read numbers separated by space, you can use following trick:
 		```
-		// Input = 1 2 3
+		// Input : 1 2 3
 		let [a,b,c] = inputReader.readNumberArray()
 		// After above statement a is 1, b is 2 and c is 3
 		```
-		**Note** Above code is just using array destructuring
-
-2. readFloat()
-	* Get a floating point number from the user
-3. readBoolean()
+		**Note** Above code is just using [array destructuring](https://javascript.info/destructuring-assignment#array-destructuring).
+2. readBoolean()
 	* Get the true or false value entered by user on the console.
 	* 'true' or 'True' or 'TRUE' etc => true (It's case insensitive)
 	* 'false' or 'False' or 'FALSE' etc => false (It's case insensitive)
-4. readChar()
+3. readChar()
 	* Get a character from the user
-5. readLine()
+4. readLine()
 	* Get a string from the user
-6. readArray()
+5. readArray()
 	* Get a generic array separated by space
-7. readNumberArray()
+6. readNumberArray()
 	* Get a numeric array separated by space
 
 	
