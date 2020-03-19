@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 /* eslint-disable no-use-before-define */
-const fs = require('fs');
+const fs = require("fs");
 
-const { argv } = require('yargs')
-	.option('source', {
-		alias: 's',
-		describe: 'Source file path'
-	})
-	.option('destination', {
-		alias: ['dest', 'd'],
-		describe: 'Path: where you want to store the output'
-	})
-	.demandOption(['source'], 'Source file path is required')
-	.help();
+const { argv } = require("yargs")
+  .option("source", {
+    alias: "s",
+    describe: "Source file path"
+  })
+  .option("destination", {
+    alias: ["dest", "d"],
+    describe: "Path: where you want to store the output"
+  })
+  .demandOption(["source"], "Source file path is required")
+  .help();
 
-startConvertion(argv.source, argv.destination);
+startConversion(argv.source, argv.destination);
 
 /**
  * Start the conversion of source file and store it at the destination
@@ -23,27 +23,28 @@ startConvertion(argv.source, argv.destination);
  * @param {*} source path
  * @param {*} destination path
  */
-function startConvertion(source, destination) {
-	const code = fs.readFileSync(source, 'utf-8');
-	const lines = code.split('\n');
+function startConversion(source, destination) {
+  const code = fs.readFileSync(source, "utf-8");
+  const lines = code.split("\n");
 
-	// Find the variable name in which inputReader is stored
-	const nameOfInputReaderVariable = findInputReaderVariableName(lines);
+  // Find the variable name in which inputReader is stored
+  const nameOfInputReaderVariable = findInputReaderVariableName(lines);
 
-	// Read the file line by line
-	let finalOutput = getPrefixString(nameOfInputReaderVariable);
+  // Read the file line by line
+  let finalOutput = getPrefixString(nameOfInputReaderVariable);
 
-	// eslint-disable-next-line no-restricted-syntax
-	for (const line of lines) {
-		const modifiedLine = processLine(line, nameOfInputReaderVariable);
-		if (modifiedLine) finalOutput += `\t${modifiedLine}\n`;
-	}
-	finalOutput += getPostfixString(code, nameOfInputReaderVariable);
+  // eslint-disable-next-line no-restricted-syntax
+  for (const line of lines) {
+    const modifiedLine = processLine(line, nameOfInputReaderVariable);
+    console.log("modifiedLine :", modifiedLine);
+    if (modifiedLine) finalOutput += `\t${modifiedLine}\n`;
+  }
+  finalOutput += getPostfixString(code, nameOfInputReaderVariable);
 
-	fs.writeFile(destination, finalOutput, (err) => {
-		if (err) throw err;
-		console.log('Hurray!!!! Output file generated successfully');
-	});
+  fs.writeFile(destination, finalOutput, err => {
+    if (err) throw err;
+    console.log("Hurray!!!! Output file generated successfully");
+  });
 }
 
 /**
@@ -54,14 +55,13 @@ function startConvertion(source, destination) {
  * @returns
  */
 function processLine(line) {
-	/**
-	 * Remove the require statment to include Competative programming input reader
-	 */
-	const splitArray = line.split(/[ ()']/g);
-	if (!(splitArray.includes('competitive-programming-js') && splitArray.includes('require'))) {
-		return line;
-	}
-	return '';
+  /**
+   * Remove the require statement
+   */
+  if (!/require.*\(.*competitive-programming-js.*\)/.test(line)) {
+    return line;
+  }
+  return "";
 }
 
 /**
@@ -72,37 +72,50 @@ function processLine(line) {
  * @returns name of input reader variable
  */
 function findInputReaderVariableName(lines) {
-	// eslint-disable-next-line no-restricted-syntax
-	for (let line of lines) {
-		line = line.trim();
-		/**
-		 * Regex test for following type of require statement :
-		 * const { inputReader } = require('competitive-programming-js');
-		 * && exclude single or multiline comments
-		 */
-		if (/^.*{.+}.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\)[ ]*;?[ ]*$/.exec(line) && !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)) {
-			/**
-			 * Below statement output :
-			 * [ 'const ', ' inputReader ', ' =' ]
-			 */
-			const stringsBeforeEqualSign = line.match(/{.*}/g)[0].replace(/([ ]*{[ ]*)|([ ]*}[ ]*)/g, '');
-			return stringsBeforeEqualSign;
-		}
-		/**
-		 * const inputReader = require('competitive-programming-js').inputReader;
-		 */
-		if (/^.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(line)) {
-			/**
-			 * Below statement output :
-			 * [ 'const', 'inputReader', '=' ]
-			 */
-			const stringsBeforeEqualSign = line.match(/^.*=/g)[0].replace(/[ ]*=/, '').split(' ');
-			return stringsBeforeEqualSign[stringsBeforeEqualSign.length - 1];
-		}
-	}
-	return null;
+  // eslint-disable-next-line no-restricted-syntax
+  for (let line of lines) {
+    line = line.trim();
+    /**
+     * Regex test for following type of require statement :
+     * const { inputReader } = require('competitive-programming-js');
+     * && exclude single or multiline comments
+     */
+    if (
+      /^.*{.+}.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\)[ ]*;?[ ]*$/.exec(
+        line
+      ) &&
+      !/^([ ]*\/\/.*)|([ ]*\/\*.*\*\/[ ]*)$/.test(line)
+    ) {
+      /**
+       * Below statement output :
+       * [ 'const ', ' inputReader ', ' =' ]
+       */
+      const stringsBeforeEqualSign = line
+        .match(/{.*}/g)[0]
+        .replace(/([ ]*{[ ]*)|([ ]*}[ ]*)/g, "");
+      return stringsBeforeEqualSign;
+    }
+    /**
+     * const inputReader = require('competitive-programming-js').inputReader;
+     */
+    if (
+      /^.*=.*require.*\(.*['"].*competitive-programming-js.*['"].*\).inputReader[ ]*;?[ ]*$/.exec(
+        line
+      )
+    ) {
+      /**
+       * Below statement output :
+       * [ 'const', 'inputReader', '=' ]
+       */
+      const stringsBeforeEqualSign = line
+        .match(/^.*=/g)[0]
+        .replace(/[ ]*=/, "")
+        .split(" ");
+      return stringsBeforeEqualSign[stringsBeforeEqualSign.length - 1];
+    }
+  }
+  return null;
 }
-
 
 /**
  * Get prefix for the converted code
@@ -111,7 +124,7 @@ function findInputReaderVariableName(lines) {
  * @returns prefix string
  */
 function getPrefixString(nameOfInputReaderVariable) {
-	const prefixString = `
+  const prefixString = `
 let _inputLines;
 let _lineNumber = 0;
 let ${nameOfInputReaderVariable} = _inputReader ();
@@ -120,7 +133,7 @@ function _main() {\n\t
 	_inputLines = _inputData.split('\\n');
 `;
 
-	return prefixString;
+  return prefixString;
 }
 
 /**
@@ -131,7 +144,7 @@ function _main() {\n\t
  * @returns postfix string
  */
 function getPostfixString(code, nameOfInputReaderVariable) {
-	let postfixString = `
+  let postfixString = `
 }
 
 var _inputData = '';
@@ -145,21 +158,21 @@ process.stdin.on('data', cacheInput).on('end', _main);
 
 function _inputReader () {`;
 
-	let returnStatement = `
+  let returnStatement = `
 	return {`;
 
-	if (code.includes(`${nameOfInputReaderVariable}.readArray()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readArray()`)) {
+    postfixString += `
 	function readArray() {
 		return _inputLines[_lineNumber++].split(' ');
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readArray,`;
-	}
+  }
 
-	if (code.includes(`${nameOfInputReaderVariable}.readBoolean()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readBoolean()`)) {
+    postfixString += `
 	function readBoolean(){
 		let word = _inputLines[_lineNumber++];
 		if(word.toLowerCase() == "true" || word.toLowerCase() == "1"){
@@ -169,55 +182,55 @@ function _inputReader () {`;
 		}
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readBoolean,`;
-	}
+  }
 
-	if (code.includes(`${nameOfInputReaderVariable}.readChar()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readChar()`)) {
+    postfixString += `
 	function readChar(){
 		return _inputLines[_lineNumber++].trim();
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readChar,`;
-	}
+  }
 
-	if (code.includes(`${nameOfInputReaderVariable}.readNumber()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readNumber()`)) {
+    postfixString += `
 	function readNumber(){
 		return Number(_inputLines[_lineNumber++]);
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readNumber,`;
-	}
+  }
 
-	if (code.includes(`${nameOfInputReaderVariable}.readLine()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readLine()`)) {
+    postfixString += `
 	function readLine(){
 		return _inputLines[_lineNumber++];
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readLine,`;
-	}
+  }
 
-	if (code.includes(`${nameOfInputReaderVariable}.readNumberArray()`)) {
-		postfixString += `
+  if (code.includes(`${nameOfInputReaderVariable}.readNumberArray()`)) {
+    postfixString += `
 	function readNumberArray(){
 		return _inputLines[_lineNumber++].split(' ').map(val => Number(val));
 	}
 		`;
-		returnStatement += `
+    returnStatement += `
 		readNumberArray,`;
-	}
+  }
 
-	returnStatement += `
+  returnStatement += `
 	}`;
-	postfixString += `
+  postfixString += `
 	${returnStatement}
 }`;
 
-	return postfixString;
+  return postfixString;
 }
