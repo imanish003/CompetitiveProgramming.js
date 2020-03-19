@@ -130,7 +130,9 @@ let _lineNumber = 0;
 let ${nameOfInputReaderVariable} = _inputReader ();
 
 function _main() {\n\t
-	_inputLines = _inputData.split('\\n');
+	_inputLines = _inputData.trim().split('\\n').map((string) => {
+		return string.trim();
+	});;
 `;
 
   return prefixString;
